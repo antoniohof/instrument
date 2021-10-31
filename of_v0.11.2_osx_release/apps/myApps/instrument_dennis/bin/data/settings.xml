@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<channel_strip>
+	<compressor_parameters>
+		<threshold>-9.69388</threshold>
+		<GR_meter>0</GR_meter>
+		<attack__ms_>20.2653</attack__ms_>
+		<release__ms_>170.408</release__ms_>
+	</compressor_parameters>
+	<delays_parameters>
+		<send>-55.102</send>
+		<time_L__ms_>645.867</time_L__ms_>
+		<time_R__ms_>394.388</time_R__ms_>
+		<feedback>0.811224</feedback>
+		<damping>0.72449</damping>
+	</delays_parameters>
+	<channel_volume>6.54</channel_volume>
+</channel_strip>
