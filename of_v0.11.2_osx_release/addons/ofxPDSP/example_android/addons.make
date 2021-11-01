@@ -1,4 +1,0 @@
-ofxOsc
-ofxAudioFile
-ofxPDSP
-ofxMidi

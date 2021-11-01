@@ -1,1 +1,0 @@
-PROJECT_LDFLAGS += -lrt 
