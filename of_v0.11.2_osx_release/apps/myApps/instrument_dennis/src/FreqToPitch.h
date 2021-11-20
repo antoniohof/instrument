@@ -14,7 +14,7 @@
 #define BANDWITH  1.0
 #define BUFFER_SIZE 2048
 #define LIN2dB(x) (double)(20. * log10(x))
-#define SR 44100
+#define SR 48000
 
 
 
@@ -47,11 +47,14 @@ public:
     /*!
     @brief Sets "mod" as selected input and returns this Unit ready to be patched. Value from in("signal") is multiplied by this value/signal. If the input is running at control rate and it is equal to 0.0f the signal branch is not processed. Defaulot value is 0.0f .
     */
+    Patchable & out_pitch(const char * index);
+
+    
+    // Patchable & out_energy(const char * index);
 
     /*!
     @brief Sets "signal" as selected output and returns this Unit ready to be patched. This is the default output. This is the product of in("signal") multiplied by in("mod").
     */
-    Patchable& out_signal();
     
     /*!
     @brief returns the value of the input buffer behind in("mod"), updated at control rate. This method is thread safe.
@@ -61,7 +64,8 @@ public:
     @brief returns the value of the output buffer, updated at control rate. This method is thread safe.
     */
     float meter_output() const;
-    
+    std::atomic<float> meterOut;
+
 
 
     ofxFilterbank filterBank;
@@ -70,22 +74,49 @@ public:
     int bufferSize;
     int inChan;
     int outChan;
+    
+    
 
 
 private:
 
+    
     void prepareUnit ( int expectedBufferSize, double sampleRate ) override;
     
     void releaseResources () override;
 
     void process (int bufferSize) noexcept override;
+
+    pdsp::OutputNode output0;
+    pdsp::OutputNode output1;
+    pdsp::OutputNode output2;
+    pdsp::OutputNode output3;
+    pdsp::OutputNode output4;
+    pdsp::OutputNode output5;
+    pdsp::OutputNode output6;
+    pdsp::OutputNode output7;
+    pdsp::OutputNode output8;
+    pdsp::OutputNode output9;
+    pdsp::OutputNode output10;
+    pdsp::OutputNode output11;
     
-    pdsp::OutputNode output;
+/*
+    pdsp::OutputNode outputEnergy0;
+    pdsp::OutputNode outputEnergy1;
+    pdsp::OutputNode outputEnergy2;
+    pdsp::OutputNode outputEnergy3;
+    pdsp::OutputNode outputEnergy4;
+    pdsp::OutputNode outputEnergy5;
+    pdsp::OutputNode outputEnergy6;
+    pdsp::OutputNode outputEnergy7;
+    pdsp::OutputNode outputEnergy8;
+    pdsp::OutputNode outputEnergy9;
+    pdsp::OutputNode outputEnergy10;
+    pdsp::OutputNode outputEnergy11;
+ */
+
     pdsp::InputNode input_signal;
-    
-    std::atomic<float> meter;
-    std::atomic<float> meterOut;
-    
+        
 };
         
 

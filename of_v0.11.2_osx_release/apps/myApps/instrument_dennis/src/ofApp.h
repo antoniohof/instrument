@@ -7,6 +7,7 @@
 #include "synth.h"
 #include "ofxPDSPFunctions.h"
 #include "FreqToPitch.h"
+#include "EnergyCalc.h"
 
 class ofApp : public ofBaseApp{
 
@@ -14,6 +15,7 @@ class ofApp : public ofBaseApp{
         void setup();
         void update();
         void draw();
+	void exit();
 
         void keyPressed(int key);
         void keyReleased(int key);
@@ -26,7 +28,8 @@ class ofApp : public ofBaseApp{
         void windowResized(int w, int h);
         void dragEvent(ofDragInfo dragInfo);
         void gotMessage(ofMessage msg);
-        
+        void drawMeter(float value, float min, float max, int x, int y, int w, int h, int pitch);
+
         // pdsp modules
         pdsp::Engine   engine;
         
@@ -61,27 +64,24 @@ class ofApp : public ofBaseApp{
         pdsp::Parameter        comp_release_ctrl;
         ofParameter<float>  comp_meter;
     
-        pdsp::PitchToFreq       toFreq;
+            
 
-        vector<AudioAnalyzerBand>   bands;
-        pdsp::PositiveValue     absolute;
+        AudioAnalyzerBand   band;
 
 
         pdsp::Scope                 scope;
-    
-    
-        //pdsp::HighCut           loCut;
-        //pdsp::Parameter         lowPassControl;
-        //pdsp::PitchToFreq       p2fHi;
+        pdsp::ToGateTrigger         trigger;
     
     
         FreqToPitch              freqToPitch;
+    	EnergyCalc energyCalc;
+ 
+        PolySynth                   synth;
+    
+        int numberOfVoices;
 
-    // synth
-    //pdsp::Engine   engine;
+        
+        bool DEBUG_MODE;
 
-
-    PolySynth                   synth;
-    pdsp::ComputerKeyboard      keyboard;
 
 };

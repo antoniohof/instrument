@@ -18,11 +18,11 @@ void PolySynth::setup(int numVoices){
     wavetable.addSineWave();
    
     // adding waveforms from samples
-    // the old trusty Adventure Kid WaveForms   
+    // the old trusty Adventure Kid WaveForms
     // http://www.adventurekid.se/akrt/waveforms/adventure-kid-waveforms/
-    wavetable.addSample( "AKWF_0001.wav");
-    wavetable.addSample( "AKWF_0022.wav");
-    wavetable.addSample( "AKWF_0042.wav");
+    wavetable.addSample( ofToDataPath(("AKWF_0001.wav")));
+    wavetable.addSample( ofToDataPath(("AKWF_0022.wav")));
+    wavetable.addSample( ofToDataPath(("AKWF_0042.wav")));
     
 
     // creating a wave from the values of each partial sine wave amplitude
@@ -31,8 +31,8 @@ void PolySynth::setup(int numVoices){
     
     // this waveform is harmonically scaled to the standard harmonic series, so just the first partial is at full amplitude
     // (unless you use values greater than 1.0f for the other partials )
-    // true == harmonically scaling active, false by default 
-    wavetable.addAdditiveWave ({ 1.0f, 0.0f, -1.0f, 0.5f, 0.5f, 1.0f, -1.0f, 0.5f, 0.5f, 1.0f, -1.0f, 0.5f, 0.5f, 1.0f, -1.0f, 0.5f }, true ); 
+    // true == harmonically scaling active, false by default
+    wavetable.addAdditiveWave ({ 1.0f, 0.0f, -1.0f, 0.5f, 0.5f, 1.0f, -1.0f, 0.5f, 0.5f, 1.0f, -1.0f, 0.5f, 0.5f, 1.0f, -1.0f, 0.5f }, true );
   
   
     // additive wave from a vector, we set a partial every three to 1
@@ -46,7 +46,7 @@ void PolySynth::setup(int numVoices){
         }
     }
     // remember to set "true" for harmonic scaling, otherwise you should have set the partials directly to the scaled amplitude
-    wavetable.addAdditiveWave ( partials_vector, true ); 
+    wavetable.addAdditiveWave ( partials_vector, true );
   
   
     // creating a NOISY WAVE, manually setting the buffer values
@@ -87,7 +87,7 @@ void PolySynth::setup(int numVoices){
  
     lfo_wave_ctrl >> lfo_switch.in_select(); // input for output selection
  
-    lfo_speed_ctrl >> lfo.in_freq();          
+    lfo_speed_ctrl >> lfo.in_freq();
     lfo_switch >> lfo_to_table;
     lfo_switch >> lfo_to_filter;
     table_lfo_mod_ctrl  >> lfo_to_table.in_mod();
@@ -108,9 +108,9 @@ void PolySynth::setup(int numVoices){
     ui.add(env_attack_ctrl.set( "env attack", 400, 5, 1200) );
     ui.add(env_decay_ctrl.set(  "env decay", 400, 5, 1200) );
     ui.add(env_sustain_ctrl.set("env sustain", 1.0f, 0.0f, 1.0f) );
-    ui.add(env_release_ctrl.set("env release", 900, 5, 2000));    
+    ui.add(env_release_ctrl.set("env release", 900, 5, 2000));
     ui.add( env_table_amt.set( "env to table", 0.0f, 0.0f, 2.0f) );
-    ui.add( env_filter_amt.set("env to filter", 30, 0, 60) );    
+    ui.add( env_filter_amt.set("env to filter", 30, 0, 60) );
 
     ui.add(lfo_wave_ctrl.set("lfo wave", 0, 0, 4));
     ui.add(lfo_speed_ctrl.set("lfo freq", 0.5f, 0.005f, 4.0f));
@@ -123,7 +123,7 @@ void PolySynth::setup(int numVoices){
     chorus_depth_ctrl >> chorus.in_depth();
     ui.add(chorus_speed_ctrl.set("chorus freq", 0.5f, 0.25f, 1.0f));
     ui.add(chorus_depth_ctrl.set("chorus depth", 3.5f, 1.0f, 10.0f));
-    ui.add(gain.set("gain", -12, -48, 48));
+    ui.add(gain.set("gain", -12, -48, 12));
     gain.enableSmoothing(50.f);
     // ------------------------------------------------------------------------
 }
@@ -168,7 +168,11 @@ float PolySynth::Voice::meter_pitch() const{
     return oscillator.meter_pitch();
 }
 
+
+
 pdsp::Patchable& PolySynth::ch( int index ){
     index = index%2;
     return gain.ch( index );
 }
+
+

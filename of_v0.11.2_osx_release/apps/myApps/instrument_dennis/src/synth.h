@@ -30,9 +30,9 @@ public:
         pdsp::VAFilter          filter;
         pdsp::Amp               voiceAmp;
 
-        pdsp::ADSR          envelope;    
+        pdsp::ADSR          envelope;
         pdsp::Amp           envToTable;
-        pdsp::Amp           envToFilter;  
+        pdsp::Amp           envToFilter;
     }; // end voice class -----------------------------
 
 
@@ -41,7 +41,7 @@ public:
     void setup( int numVoice );
 
     pdsp::Patchable & ch( int index );
-
+    
     std::vector<Voice>       voices;
     ofParameterGroup    ui;
 
@@ -63,10 +63,10 @@ private: // --------------------------------------------------
     
     pdsp::Parameter     table_ctrl;
 
-    pdsp::Parameter     table_lfo_mod_ctrl;    
-    pdsp::Parameter     filter_lfo_mod_ctrl;    
+    pdsp::Parameter     table_lfo_mod_ctrl;
+    pdsp::Parameter     filter_lfo_mod_ctrl;
 
-    pdsp::Parameter     lfo_speed_ctrl;    
+    pdsp::Parameter     lfo_speed_ctrl;
     pdsp::Parameter     lfo_wave_ctrl;
     
     pdsp::WaveTable  wavetable;
@@ -77,7 +77,7 @@ private: // --------------------------------------------------
     pdsp::Switch        lfo_switch;
 
     // chorus ------------------------
-    pdsp::DimensionChorus   chorus;         
+    pdsp::DimensionChorus   chorus;
     
     ofParameterGroup     ui_chorus;
     pdsp::Parameter      chorus_speed_ctrl;
@@ -86,4 +86,3 @@ private: // --------------------------------------------------
     std::vector<float> partials_vector;
 
 };
-

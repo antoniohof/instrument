@@ -36,7 +36,14 @@ class ofxFilterbank
         float smoothAmnt, treshold, estimateMax, maskAmnt, pitchDev, pitchFader;
         int midiMin, midiMax, midiMinVar, midiMaxVar;
     
-    
+        float noteToFreq(float note);
+        pair<float, float> getFrequency();
+        vector<pair<int, float>> getFrequencies();
+
+    float getAverageEnergy();
+    float average(vector<float> v);
+
+    float higherValue;
 
     protected:
 

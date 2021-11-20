@@ -18,7 +18,6 @@ public:
     float meter_rms() const;
     float meter_onset() const;
     
-private:
 	void freqLoChanged(float & pitch);
 	void freqHiChanged(float & pitch);
 

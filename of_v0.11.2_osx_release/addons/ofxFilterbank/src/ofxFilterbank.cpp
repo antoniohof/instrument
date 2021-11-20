@@ -3,7 +3,13 @@
  */
 
 #include "ofxFilterbank.h"
-
+#include <math.h>
+#include <numeric>
+#include <iostream>
+#include <cmath>
+#include "glm/mat4x4.hpp"
+#include "ofMathConstants.h"
+#include "ofConstants.h"
 
 //--------------------------------------------------------------
 void ofxFilterbank::setup(int iBufferSize, int iMidiMin, int iMidiMax, int iChans, float iBw, int iSR, float iGain){
@@ -17,11 +23,12 @@ void ofxFilterbank::setup(int iBufferSize, int iMidiMin, int iMidiMax, int iChan
     gain = iGain;
 
     pitchDev = 0.0;
-    maskAmnt = 0.0;
-    smoothAmnt = 0.7;
-    estimateMax = 0.2;
+    maskAmnt = 0.99f;
+    smoothAmnt = 0.3;
+    estimateMax = 0.8;
+    higherValue = 0.0f;
 
-    treshold = 0.02;
+    treshold = 0.024;
     showAll = true;
 
     left.assign(bufferSize, 0.0);
@@ -117,7 +124,6 @@ void ofxFilterbank::exit(){
 }
 //--------------------------------------------------------------
 void ofxFilterbank::draw(int w, int h){
-
     ofSetColor(255);
     ofDrawBitmapString("FB Analysis", 4, 18);
     ofRect(0, 0, w, h);
@@ -131,6 +137,7 @@ void ofxFilterbank::draw(int w, int h){
             ofSetColor(color);
             ofDrawBitmapString(midiToNote(n), step*(n-midiMinVar), h-ener);
             ofLine(step*(n-midiMinVar), h, step*(n-midiMinVar), h-ener );
+            
         }
         else if (showAll){
             ofSetColor(85);
@@ -144,10 +151,105 @@ void ofxFilterbank::draw(int w, int h){
     ofSetLineWidth(1);
     ofLine(0,h-tres, w, h-tres);
     ofDrawBitmapString("Treshold" , w-80, h-tres);
+    
+}
+
+float ofxFilterbank::getAverageEnergy() {
+    vector<float> energies;
+
+    for(int n=midiMinVar; n<midiMaxVar; n++){
+        // log_smth_energies[n] = LIN2dB (smth_energies[n]);
+      
+       // float ener = ofMap (log_smth_energies[n], -45.0, LIN2dB(estimateMax), 0.0, h, true);
+        float energy = smth_energies[n];
+
+        energies.push_back((float)energy);
+
+    }
+    float e = average(energies);
+    return e;
+}
+
+pair<float, float> ofxFilterbank::getFrequency(){
+    pair<float, float> pairV;
+    float strongEnergy = 0.0f;
+    vector<float> values;
+    // float step = (float) w / (midiMaxVar - midiMinVar);
+    for(int n=midiMinVar; n<midiMaxVar; n++){
+        // log_smth_energies[n] = LIN2dB (smth_energies[n]);
+      
+       // float ener = ofMap (log_smth_energies[n], -45.0, LIN2dB(estimateMax), 0.0, h, true);
+        float energy = smth_energies[n];
+
+        if(energy > treshold){
+            values.push_back(float(n));
+             if (energy > smth_energies[higherValue]) {
+                  higherValue = n;
+                 strongEnergy = energy;
+              }
+        }
+
+    }
+    //ofLog () << "higher: " << midiToNote(higherValue);
+    //ofLog () << smth_energies[higherValue];
+
+    //float logTresh = LIN2dB(treshold);
+    //float tres = ofMap(logTresh, -45.0, LIN2dB(estimateMax), 0.0, h);
+    float octave = 12.0f;
+    pairV = std::make_pair(higherValue,(float)strongEnergy);
+
+    return pairV;//average(values) - 12.0f;
+}
+
+vector<pair<int, float>> ofxFilterbank::getFrequencies(){
+        
+    vector<pair<int, float>> values;
+    // float step = (float) w / (midiMaxVar - midiMinVar);
+    for(int n=midiMinVar; n<midiMaxVar; n++){
+        // log_smth_energies[n] = LIN2dB (smth_energies[n]);
+      
+       // float ener = ofMap (log_smth_energies[n], -45.0, LIN2dB(estimateMax), 0.0, h, true);
+        float energy = smth_energies[n];
+        if(!isinf(energy) && !isnan(energy) && energy > treshold){
+            pair<int, float> p;
+            int pitch = n;
+            p = std::make_pair(pitch,(float)energy);
+            values.push_back(p);
+        }
+
+    }
+
+    //float logTresh = LIN2dB(treshold);
+    //float tres = ofMap(logTresh, -45.0, LIN2dB(estimateMax), 0.0, h);
+    return values;//average(values) - 12.0f;
+}
 
 
+float ofxFilterbank::average(vector<float> v){
+    if(v.empty()){
+        return 0;
+    }
+
+    //auto const count = static_cast<float>(v.size());
+     return accumulate( v.begin(), v.end(), 0.0)/v.size();
+    //return reduce(v.begin(), v.end()) / count;
+}
+
+float noteToFreq(int note) {
+    float a = 440; //frequency of A (coomon value is 440Hz)
+    return (a / 32) * pow(2, ((note - 9) / 12.0));
+}
+
+float ofxFilterbank::noteToFreq(float note) {
+    // uma oitava e 12
+    float a = 440.0f; // frequency of A (coomon value is 440Hz) //
+    return (a / 32.0f) * pow(2, ((note - 9.0f) / 12.0f));
+
+    
+    //result:=base_a4*power(2,(n-57)/12)
 
 }
+
 //--------------------------------------------------------------
 string ofxFilterbank::midiToNote(int midi){
     string noteName;
