@@ -8,6 +8,8 @@
 #include "ofxPDSPFunctions.h"
 #include "FreqToPitch.h"
 #include "EnergyCalc.h"
+#include <wiringPi.h> 
+#include <ads1115.h>
 
 class ofApp : public ofBaseApp{
 
@@ -29,6 +31,15 @@ class ofApp : public ofBaseApp{
         void dragEvent(ofDragInfo dragInfo);
         void gotMessage(ofMessage msg);
         void drawMeter(float value, float min, float max, int x, int y, int w, int h, int pitch);
+
+        // i2c
+        //I2c * i2c;
+        //string path;
+        //uint8_t writeBuf[3];      // Buffer to store the 3 bytes that we write to the I2C device
+
+
+        //Adafruit_ADS1115 ads;
+
 
         // pdsp modules
         pdsp::Engine   engine;
@@ -79,9 +90,15 @@ class ofApp : public ofBaseApp{
         PolySynth                   synth;
     
         int numberOfVoices;
-
+        
+        //i2c
+        int channel1;
+        int channel2;
+        int channel3;
+        int channel4;
         
         bool DEBUG_MODE;
+        
 
 
 };

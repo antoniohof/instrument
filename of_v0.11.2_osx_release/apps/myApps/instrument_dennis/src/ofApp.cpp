@@ -19,6 +19,37 @@ void ofApp::setup(){
     ofNoFill();
     ofSetLineWidth(2.0f);
     
+    // Settup:
+    wiringPiSetup();
+    // Listen on 0x48, 70 can be any number
+    ads1115Setup(70, 0x48);
+
+
+    
+    // i2c setup
+    // 0x48, 0x49, 0x4a, 0x4b.
+    //writeBuf[0] = 0;
+    //writeBuf[1] = 0;
+    //writeBuf[2] = 0;
+
+    //path = "/dev/i2c-1";
+    //i2c = new I2c(path.c_str());
+    //ofLog() << "initialized i2c";
+    
+    //writeBuf[0] = 2; // point to Hi_thresh Register
+    //writeBuf[1] = 0x2E; // MSB's0x7F
+    //writeBuf[2] = 0x5C; // LSB's0xFF
+    
+    //char config[3] = {0};
+	//config[0] = 0x01;
+	//config[1] = 0x84;
+	//config[2] = 0x83;
+    
+    //i2c->writeByte(0x01, 0);
+    //i2c->writeByte(0x84, 1);
+    //i2c->writeByte(0x83, 2);
+    //i2c->writeByte(0,1);
+
     DEBUG_MODE = false;
     //-------------------------PATCHING--------------
     engine.setChannels(1, 2); // input + output channels
@@ -26,7 +57,7 @@ void ofApp::setup(){
     float gain = 36.00f;
     // anlayzer
     // patching the scope
-    engine.audio_in(0)  >> scope >> engine.blackhole();
+    engine.audio_in(0) * 0.2f >> scope >> engine.blackhole();
     
     // decomment for a longer scope time window
     //scope.set(512*16);
@@ -155,7 +186,7 @@ void ofApp::setup(){
     
     gui.add( synth.ui );
 
-
+    
         
     string name = "analyser ";
   
@@ -165,6 +196,8 @@ void ofApp::setup(){
 
 
     gui.setPosition(15, 20);
+    
+    gui.loadFromFile("settings.xml");
 
 }
 
@@ -172,56 +205,77 @@ void ofApp::setup(){
 void ofApp::update(){
     if (DEBUG_MODE) {
     // we use comp_meter to report the gain reduction in dB
-    comp_meter.set(compressor.meter_GR());
+        comp_meter.set(compressor.meter_GR());
     }
 
+    // i2c
+    //int result = 0;
+    
+    //i2c->addressSet(48);
+    //result = i2c->readByte(70);
+
+            
+    //ofLog() << result;
+
+   channel1 = analogRead(70+0);
+   channel2 = analogRead(70+1);
+   channel3 = analogRead(70+2);
+   channel4 = analogRead(70+3);
+
+   ofLog() << channel1;
+   ofLog() << channel2;
+   ofLog() << channel3;
+   ofLog() << channel4;
+
+    
 }
 
 //--------------------------------------------------------------
 void ofApp::draw(){
     if (DEBUG_MODE) {
-    // draw GUI
-    gui.draw();
-    
-    // draws some bars
-    ofSetColor(255);
-    ofFill();
+        // draw GUI
+        gui.draw();
 
-    ofTranslate(    gui.getPosition().x + 20 + gui.getWidth(),
-                gui.getPosition().y );
-    ofSetColor(255);
-    string name = "band ";
-    ofDrawBitmapString( name, 0, 20 );
-    ofDrawBitmapString( "rms", 0, 45 );
-    ofDrawBitmapString( "peak", 0, 75 );
-    ofDrawBitmapString( "onset", 0, 105 );
-    
-    ofDrawRectangle( 40, 30, 180*band.meter_rms(), 20);
-    ofDrawRectangle( 40, 60, 180*band.meter_peak(), 20);
-    
-    int white = 255 * band.meter_onset();
-    white = (white > 255) ? 255 : white;
-     
-    ofSetColor(white);
-    ofDrawRectangle( 40, 90, 180, 20);
-    
-    ofTranslate(0, 120);
-    
+        
+        // draws some bars
+        ofSetColor(255);
+        ofFill();
+
+        ofTranslate(    gui.getPosition().x + 20 + gui.getWidth(),
+                    gui.getPosition().y );
+        ofSetColor(255);
+        string name = "band ";
+        ofDrawBitmapString( name, 0, 20 );
+        ofDrawBitmapString( "rms", 0, 45 );
+        ofDrawBitmapString( "peak", 0, 75 );
+        ofDrawBitmapString( "onset", 0, 105 );
+        
+        ofDrawRectangle( 40, 30, 180*band.meter_rms(), 20);
+        ofDrawRectangle( 40, 60, 180*band.meter_peak(), 20);
+        
+        int white = 255 * band.meter_onset();
+        white = (white > 255) ? 255 : white;
+         
+        ofSetColor(white);
+        ofDrawRectangle( 40, 90, 180, 20);
+        
+        ofTranslate(0, 120);
+    }
 
     // draws the scope
     ofSetColor(255);
-    ofDrawBitmapString( "input scope", 0, 35 );
-    scope.draw( 0, 50, 220, 100);
+    //ofDrawBitmapString( "input scope", 0, 35 );
+    scope.draw( 250, 50, 500, 200);
     
      ofPushStyle();
      ofPushMatrix();
-     ofTranslate (100,250,0);
-     freqToPitch.filterBank.draw(800,400);
-
+     ofTranslate (100,350,0);
+        freqToPitch.filterBank.draw(800,400);
      ofPopMatrix();
      ofPopStyle();
     
     ofSetColor(255);
+    if (DEBUG_MODE) {
 
     // draw pitch meters
        int xBase = 10;
